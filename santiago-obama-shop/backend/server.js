@@ -93,6 +93,20 @@ app.get('/api/orders', async (req, res) => {
   }
 });
 
+const sendOrderEmail = require('./mailer'); // asegúrate de que esté bien la ruta
+
+app.post('/api/orders', async (req, res) => {
+  try {
+    const newOrder = new Order(req.body);
+    await newOrder.save();
+    sendOrderEmail(req.body); // Enviar correo
+    res.status(201).json({ success: true });
+  } catch (err) {
+    console.error('Failed to save order:', err);
+    res.status(500).json({ error: 'Failed to save order' });
+  }
+});
+
 
 
 // MongoDB connection and server startup
